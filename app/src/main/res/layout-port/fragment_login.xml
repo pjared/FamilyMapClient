@@ -114,11 +114,11 @@
 
 
 
+
     <RadioGroup
         android:id="@+id/radioGender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:orientation="horizontal" >
 
         <TextView
@@ -126,14 +126,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:text="@string/gender" />
+            android:text="@string/gender"
+            />
 
         <RadioButton
             android:id="@+id/radioMale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/radio_male"
-            android:checked="true" />
+            android:text="@string/radio_male" />
 
         <RadioButton
             android:id="@+id/radioFemale"
@@ -142,6 +142,8 @@
             android:text="@string/radio_female" />
 
     </RadioGroup>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"

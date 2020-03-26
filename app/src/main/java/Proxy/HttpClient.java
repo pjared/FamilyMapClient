@@ -16,12 +16,18 @@ import Results.RegisterResult;
 public class HttpClient {
     private String serverHost;
     private String serverPort;
+    private URL url;
 
     public HttpClient() {}
 
+    //instead of this just do a URL?
     public HttpClient(String serverHost, String serverPort) {
         this.serverHost = serverHost;
         this.serverPort = serverPort;
+    }
+
+    public HttpClient(URL url) {
+        this.url = url;
     }
 
     //for the login passoff, just need to make a login proxy and then can do others
@@ -29,9 +35,6 @@ public class HttpClient {
         RegisterResult newRegister = new RegisterResult();
 
         try {
-            URL url = new URL("http://" + serverHost + ":" + serverPort + "/user/register");
-
-            // Start constructing our HTTP request
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
             http.setRequestMethod("POST");
             http.setDoOutput(true);
