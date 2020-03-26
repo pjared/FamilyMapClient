@@ -20,10 +20,10 @@ public class RegisterTask extends AsyncTask<URL, Integer, RegisterResult> {
         rRequest = new RegisterRequest(userName, password, email, firstName, lastName, gender);
     }
 
+    //need to ask about how to correctly send the URL since it get jumbled
     @Override
     protected RegisterResult doInBackground(URL... urls) {
         HttpClient httpClient = new HttpClient(urls[0]);
-
         RegisterResult register;
         register = httpClient.register(rRequest);
 
@@ -34,8 +34,7 @@ public class RegisterTask extends AsyncTask<URL, Integer, RegisterResult> {
     protected void onPostExecute(RegisterResult result) {
         if(result.isSuccess()) {
             Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-        if(!result.isSuccess()) {
+        } else {
             Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }

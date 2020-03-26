@@ -133,9 +133,10 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //String userName, String password, String email, String firstName, String lastName, String gender
-                RegisterTask task = new RegisterTask();
+                RegisterTask task = new RegisterTask(userNameEditText.toString(), passWordEditText.toString(),
+                                        emailEditText.toString(), firstNameEditText.toString(),
+                                        lastNameEditText.toString(), userGender);
                 try {
-                    //unsure of how to set the data in the task
                     task.execute(new URL("https://" + serverEditText.toString() +
                                             ":" + portEditText.toString() + "/user/register"));
                 } catch (MalformedURLException e) {
@@ -148,7 +149,7 @@ public class LoginFragment extends Fragment {
             @Override
             //String userName, String password
             public void onClick(View v) {
-                LoginTask task = new LoginTask();
+                LoginTask task = new LoginTask(userNameEditText.toString(), passWordEditText.toString());
                 try {
                     task.execute(new URL("https://" + serverEditText.toString() +
                             ":" + portEditText.toString() + "/user/login"));

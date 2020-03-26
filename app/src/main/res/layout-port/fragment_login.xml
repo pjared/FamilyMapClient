@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_span="3"
             android:inputType="text"
-            tools:text="" />
+            tools:text="localhost" />
     </TableRow>
 
     <TableRow>
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_span="3"
             android:inputType="number"
-            tools:text="" />
+            tools:text="8080" />
     </TableRow>
 
     <TableRow>
@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_span="3"
             android:inputType="textPersonName"
-            tools:text="Jerod" />
+            tools:text="" />
     </TableRow>
 
     <TableRow>
@@ -94,7 +94,7 @@
             android:layout_height="wrap_content"
             android:layout_span="3"
             android:inputType="textPersonName"
-            tools:text="Wilkerson" />
+            tools:text="" />
     </TableRow>
 
     <TableRow>
@@ -109,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_span="3"
             android:inputType="textEmailAddress"
-            tools:text="jwilkerson@cs.byu.edu" />
+            tools:text="" />
     </TableRow>
 
 

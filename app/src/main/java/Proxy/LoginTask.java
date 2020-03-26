@@ -1,19 +1,18 @@
 package Proxy;
 
-import android.graphics.BitmapRegionDecoder;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import Requests.LoginRequest;
-import Requests.RegisterRequest;
 import Results.LoginResult;
 
 public class LoginTask extends AsyncTask<URL, Integer, LoginResult> {
     private LoginRequest lRequest;
+
+    private Context mContext;
 
     public LoginTask() {}
 
@@ -31,6 +30,17 @@ public class LoginTask extends AsyncTask<URL, Integer, LoginResult> {
         return login;
     }
 
+    @Override
+    protected void onPostExecute(LoginResult result) {
+        if(!result.isSuccess()) {
+            Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();
+        } else {
+            PersonTask task = new PersonTask();
+            //need to somehow grab the url from this method
+            /*task.execute(new URL("https://" + serverEditText.toString() +
+                    ":" + portEditText.toString() + "/person")); */
+        }
+    }
     //Add an onpost execute, takes a loginResult paramater - Toast if failed. do another task
     //gets the family, from there do the toast that success.
 }

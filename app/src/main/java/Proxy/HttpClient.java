@@ -11,6 +11,7 @@ import java.net.URL;
 import Requests.LoginRequest;
 import Requests.RegisterRequest;
 import Results.LoginResult;
+import Results.PersonResult;
 import Results.RegisterResult;
 
 public class HttpClient {
@@ -31,6 +32,36 @@ public class HttpClient {
     }
 
     //for the login passoff, just need to make a login proxy and then can do others
+
+    public PersonResult getPersons() {
+        PersonResult pResult = new PersonResult();
+        try {
+            //URL url = new URL("http://" + serverHost + ":" + serverPort + "/games/list");
+
+            HttpURLConnection http = (HttpURLConnection)url.openConnection();
+
+            http.setRequestMethod("GET");
+            http.setDoOutput(false);
+
+            http.addRequestProperty("Authorization", "afj232hj2332");
+            http.addRequestProperty("Accept", "application/json");
+
+            http.connect();
+            if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStream respBody = http.getInputStream();
+                String respData = readString(respBody);
+                System.out.println(respData);
+            }
+            else {
+                System.out.println("ERROR: " + http.getResponseMessage());
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return pResult;
+    }
+
     public RegisterResult register(RegisterRequest r) {
         RegisterResult newRegister = new RegisterResult();
 
