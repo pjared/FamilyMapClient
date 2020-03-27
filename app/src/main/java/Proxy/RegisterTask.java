@@ -4,6 +4,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.example.familymap.LoginFragment;
+import com.example.familymap.MainActivity;
+
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import Requests.RegisterRequest;
@@ -12,7 +16,12 @@ import Results.RegisterResult;
 public class RegisterTask extends AsyncTask<URL, Integer, RegisterResult> {
     //this is going to be where I send the registers.
     private RegisterRequest rRequest;
-    private Context mContext;
+
+    Context mContext;
+
+    public void setmContext(Context mContext) {
+        this.mContext = mContext;
+    }
 
     public RegisterTask() {}
 
@@ -23,8 +32,9 @@ public class RegisterTask extends AsyncTask<URL, Integer, RegisterResult> {
     //need to ask about how to correctly send the URL since it get jumbled
     @Override
     protected RegisterResult doInBackground(URL... urls) {
-        HttpClient httpClient = new HttpClient(urls[0]);
         RegisterResult register;
+
+        HttpClient httpClient = new HttpClient();
         register = httpClient.register(rRequest);
 
         return register;
@@ -32,8 +42,11 @@ public class RegisterTask extends AsyncTask<URL, Integer, RegisterResult> {
 
     @Override
     protected void onPostExecute(RegisterResult result) {
+        DataCache dCache = DataCache.getInstance();
         if(result.isSuccess()) {
-            Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();
+            dCache.setAuthToken(result.getAuthToken());
+            PersonTask task = new PersonTask(mContext);
+            task.execute();
         } else {
             Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();
         }

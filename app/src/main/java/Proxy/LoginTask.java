@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import Requests.LoginRequest;
@@ -12,7 +13,11 @@ import Results.LoginResult;
 public class LoginTask extends AsyncTask<URL, Integer, LoginResult> {
     private LoginRequest lRequest;
 
-    private Context mContext;
+    Context mContext;
+
+    public void setmContext(Context mContext) {
+        this.mContext = mContext;
+    }
 
     public LoginTask() {}
 
@@ -22,23 +27,33 @@ public class LoginTask extends AsyncTask<URL, Integer, LoginResult> {
 
     @Override
     protected LoginResult doInBackground(URL... urls) {
-        HttpClient httpClient = new HttpClient(urls[0]);
+        DataCache dCache = DataCache.getInstance();
+        String url = "http://" + dCache.getServerHost()
+                + ":" + dCache.getUserPort() + "/user/login";
 
-        LoginResult login;
-        login = httpClient.login(lRequest);
+        LoginResult login = null;
+        URL newURL;
 
+        try {
+            newURL = new URL(url);
+            HttpClient httpClient = new HttpClient(newURL);
+
+            login = httpClient.login(lRequest);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         return login;
     }
 
     @Override
     protected void onPostExecute(LoginResult result) {
-        if(!result.isSuccess()) {
-            Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();
+        DataCache dCache = DataCache.getInstance();
+        if(result.isSuccess()) {
+            dCache.setAuthToken(result.getAuthToken());
+            PersonTask task = new PersonTask(mContext);
+            task.execute();
         } else {
-            PersonTask task = new PersonTask();
-            //need to somehow grab the url from this method
-            /*task.execute(new URL("https://" + serverEditText.toString() +
-                    ":" + portEditText.toString() + "/person")); */
+            Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
     //Add an onpost execute, takes a loginResult paramater - Toast if failed. do another task

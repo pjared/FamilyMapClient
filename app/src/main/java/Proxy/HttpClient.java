@@ -1,5 +1,9 @@
 package Proxy;
 
+import android.util.JsonReader;
+
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,15 +39,14 @@ public class HttpClient {
 
     public PersonResult getPersons() {
         PersonResult pResult = new PersonResult();
+        DataCache dCache = DataCache.getInstance();
         try {
-            //URL url = new URL("http://" + serverHost + ":" + serverPort + "/games/list");
-
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
 
             http.setRequestMethod("GET");
             http.setDoOutput(false);
 
-            http.addRequestProperty("Authorization", "afj232hj2332");
+            http.addRequestProperty("Authorization", dCache.getAuthToken());
             http.addRequestProperty("Accept", "application/json");
 
             http.connect();
@@ -51,6 +54,7 @@ public class HttpClient {
                 InputStream respBody = http.getInputStream();
                 String respData = readString(respBody);
                 System.out.println(respData);
+                pResult = new Gson().fromJson(respData, PersonResult.class);
             }
             else {
                 System.out.println("ERROR: " + http.getResponseMessage());
@@ -64,8 +68,11 @@ public class HttpClient {
 
     public RegisterResult register(RegisterRequest r) {
         RegisterResult newRegister = new RegisterResult();
-
+        DataCache dCache = DataCache.getInstance();
+        String userUrl = "http://" + dCache.getServerHost()
+                + ":" + dCache.getUserPort() + "/user/register";
         try {
+            url = new URL(userUrl);
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
             http.setRequestMethod("POST");
             http.setDoOutput(true);
@@ -73,30 +80,29 @@ public class HttpClient {
             http.addRequestProperty("Accept", "application/json");
 
             http.connect();
-
             String reqData =
                 "{" +
-                    "\"userName\": \"" + r.getUserName() + "\"" +
-                    "\"password\": \"" + r.getPassword() + "\"" +
-                    "\"email\": \"" + r.getEmail() + "\"" +
-                    "\"firstName\": \"" + r.getFirstName() + "\"" +
-                    "\"lastName\": \"" + r.getLastName() + "\"" +
+                    "\"userName\": \"" + r.getUserName() + "\"," +
+                    "\"password\": \"" + r.getPassword() + "\"," +
+                    "\"email\": \"" + r.getEmail() + "\"," +
+                    "\"firstName\": \"" + r.getFirstName() + "\"," +
+                    "\"lastName\": \"" + r.getLastName() + "\"," +
                     "\"gender\": \"" + r.getGender() + "\"" +
                 "}";
 
             OutputStream reqBody = http.getOutputStream();
             writeString(reqData, reqBody);
             reqBody.close();
-
             if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 InputStream respBody = http.getInputStream();
                 String respData = readString(respBody);
-                System.out.println(respData); //need to read this when it goes through to see how to distrubute the data
-                //also need to use it to give the user their authToken
+                newRegister = new Gson().fromJson(respData, RegisterResult.class);
+                //response data is the JSONed result, so need to break it up with GSON and store.
+                System.out.println(respData);
             }
             else {
                 System.out.println("ERROR: " + http.getResponseMessage());
-                //use this to find out what kind of error happened here
+                newRegister.setMessage("Register failed\n Username taken/already exists");
             }
         }
         catch (IOException e) {
@@ -108,20 +114,16 @@ public class HttpClient {
     public LoginResult login(LoginRequest l) {
         LoginResult newLogin = new LoginResult();
         try {
-            URL url = new URL("http://" + serverHost + ":" + serverPort + "/user/login");
-
             // Start constructing our HTTP request
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
             http.setRequestMethod("POST");
             http.setDoOutput(true);
-
             http.addRequestProperty("Accept", "application/json");
-
             http.connect();
 
             String reqData =
                 "{" +
-                    "\"userName\": \"" + l.getUserName() + "\"" +
+                    "\"userName\": \"" + l.getUserName() + "\"," +
                     "\"password\": \"" + l.getPassword() + "\"" +
                 "}";
 
@@ -132,12 +134,13 @@ public class HttpClient {
             if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 InputStream respBody = http.getInputStream();
                 String respData = readString(respBody);
-                System.out.println(respData); //need to read this when it goes through to see how to distrubute the data
-                //also need to use it to give the user their authToken
+                System.out.println(respData);
+                newLogin = new Gson().fromJson(respData, LoginResult.class);
             }
             else {
                 System.out.println("ERROR: " + http.getResponseMessage());
                 //use this to find out what kind of error happened here
+                newLogin.setMessage("Missing field/invalid login");
             }
         }
         catch (IOException e) {

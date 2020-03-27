@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import Proxy.DataCache;
 import Proxy.LoginTask;
 import Proxy.RegisterTask;
 
@@ -125,6 +126,11 @@ public class LoginFragment extends Fragment {
                 RadioButton rb=(RadioButton) view.findViewById(checkedId);
                 //Toast.makeText(getActivity(), rb.getText(), Toast.LENGTH_SHORT).show();
                 userGender = rb.getText().toString();
+                if(userGender.equals("Male")) {
+                    userGender = "m";
+                } else {
+                    userGender = "f";
+                }
                 checkRegisterValues();
             }
         });
@@ -133,15 +139,15 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //String userName, String password, String email, String firstName, String lastName, String gender
-                RegisterTask task = new RegisterTask(userNameEditText.toString(), passWordEditText.toString(),
-                                        emailEditText.toString(), firstNameEditText.toString(),
-                                        lastNameEditText.toString(), userGender);
-                try {
-                    task.execute(new URL("https://" + serverEditText.toString() +
-                                            ":" + portEditText.toString() + "/user/register"));
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
+                RegisterTask task = new RegisterTask(userNameEditText.getText().toString(), passWordEditText.getText().toString(),
+                                        emailEditText.getText().toString(), firstNameEditText.getText().toString(),
+                                        lastNameEditText.getText().toString(), userGender);
+                DataCache dCache = DataCache.getInstance();
+                dCache.setServerHost(serverEditText.getText().toString());
+                dCache.setUserPort(portEditText.getText().toString());
+                dCache.setFullUserName(firstNameEditText.getText().toString() + " " +lastNameEditText.getText().toString());
+                task.setmContext(getActivity());
+                task.execute();
             }
         });
 
@@ -149,13 +155,13 @@ public class LoginFragment extends Fragment {
             @Override
             //String userName, String password
             public void onClick(View v) {
-                LoginTask task = new LoginTask(userNameEditText.toString(), passWordEditText.toString());
-                try {
-                    task.execute(new URL("https://" + serverEditText.toString() +
-                            ":" + portEditText.toString() + "/user/login"));
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
+                DataCache dCache = DataCache.getInstance();
+                dCache.setServerHost(serverEditText.getText().toString());
+                dCache.setUserPort(portEditText.getText().toString());
+                dCache.setFullUserName(firstNameEditText.getText().toString() + " " +lastNameEditText.getText().toString());
+                LoginTask task = new LoginTask(userNameEditText.getText().toString(), passWordEditText.getText().toString());
+                task.setmContext(getActivity());
+                task.execute();
             }
         });
 
@@ -168,4 +174,5 @@ public class LoginFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
     }
+    //login
 }
