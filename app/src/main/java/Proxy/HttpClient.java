@@ -69,6 +69,31 @@ public class HttpClient {
 
     public EventResult getEvents() {
         EventResult eResult = new EventResult();
+        DataCache dCache = DataCache.getInstance();
+        try {
+            HttpURLConnection http = (HttpURLConnection)url.openConnection();
+
+            http.setRequestMethod("GET");
+            http.setDoOutput(false);
+
+            http.addRequestProperty("Authorization", dCache.getAuthToken());
+            http.addRequestProperty("Accept", "application/json");
+
+            http.connect();
+            if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStream respBody = http.getInputStream();
+                String respData = readString(respBody);
+                System.out.println(respData);
+                eResult = new Gson().fromJson(respData, EventResult.class);
+            }
+            else {
+                System.out.println("ERROR: " + http.getResponseMessage());
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return eResult;
     }
 

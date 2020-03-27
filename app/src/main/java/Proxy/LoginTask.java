@@ -57,6 +57,4 @@ public class LoginTask extends AsyncTask<URL, Integer, LoginResult> {
             Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-    //Add an onpost execute, takes a loginResult paramater - Toast if failed. do another task
-    //gets the family, from there do the toast that success.
 }

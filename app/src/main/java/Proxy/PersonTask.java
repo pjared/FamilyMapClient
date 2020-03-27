@@ -39,11 +39,22 @@ public class PersonTask extends AsyncTask<URL, Integer, PersonResult> {
             newURL = new URL(url);
             HttpClient httpClient = new HttpClient(newURL);
             persons = httpClient.getPersons();
-            dCache.setAllEvent(httpClient.getEvents().getData());
             dCache.setAllPersons(persons.getData());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
+        //This code will get all of the events - was told to do these in the same task
+        url = "http://" + dCache.getServerHost()
+                + ":" + dCache.getUserPort() + "/event";
+        try {
+            newURL = new URL(url);
+            HttpClient httpClient = new HttpClient(newURL);
+            dCache.setAllEvent(httpClient.getEvents().getData());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
         return persons;
     }
 
