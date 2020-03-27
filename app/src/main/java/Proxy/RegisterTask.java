@@ -44,6 +44,7 @@ public class RegisterTask extends AsyncTask<URL, Integer, RegisterResult> {
     protected void onPostExecute(RegisterResult result) {
         DataCache dCache = DataCache.getInstance();
         if(result.isSuccess()) {
+            dCache.setPersonID(result.getPersonID());
             dCache.setAuthToken(result.getAuthToken());
             PersonTask task = new PersonTask(mContext);
             task.execute();

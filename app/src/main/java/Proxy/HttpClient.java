@@ -14,6 +14,7 @@ import java.net.URL;
 
 import Requests.LoginRequest;
 import Requests.RegisterRequest;
+import Results.EventResult;
 import Results.LoginResult;
 import Results.PersonResult;
 import Results.RegisterResult;
@@ -64,6 +65,11 @@ public class HttpClient {
             e.printStackTrace();
         }
         return pResult;
+    }
+
+    public EventResult getEvents() {
+        EventResult eResult = new EventResult();
+        return eResult;
     }
 
     public RegisterResult register(RegisterRequest r) {

@@ -145,7 +145,7 @@ public class LoginFragment extends Fragment {
                 DataCache dCache = DataCache.getInstance();
                 dCache.setServerHost(serverEditText.getText().toString());
                 dCache.setUserPort(portEditText.getText().toString());
-                dCache.setFullUserName(firstNameEditText.getText().toString() + " " +lastNameEditText.getText().toString());
+                //dCache.setFullUserName(firstNameEditText.getText().toString() + " " + lastNameEditText.getText().toString());
                 task.setmContext(getActivity());
                 task.execute();
             }
@@ -158,7 +158,7 @@ public class LoginFragment extends Fragment {
                 DataCache dCache = DataCache.getInstance();
                 dCache.setServerHost(serverEditText.getText().toString());
                 dCache.setUserPort(portEditText.getText().toString());
-                dCache.setFullUserName(firstNameEditText.getText().toString() + " " +lastNameEditText.getText().toString());
+                //dCache.setFullUserName(firstNameEditText.getText().toString() + " " +lastNameEditText.getText().toString());
                 LoginTask task = new LoginTask(userNameEditText.getText().toString(), passWordEditText.getText().toString());
                 task.setmContext(getActivity());
                 task.execute();

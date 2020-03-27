@@ -50,6 +50,7 @@ public class LoginTask extends AsyncTask<URL, Integer, LoginResult> {
         DataCache dCache = DataCache.getInstance();
         if(result.isSuccess()) {
             dCache.setAuthToken(result.getAuthToken());
+            dCache.setPersonID(result.getPersonID());
             PersonTask task = new PersonTask(mContext);
             task.execute();
         } else {

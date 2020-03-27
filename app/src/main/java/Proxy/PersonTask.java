@@ -2,11 +2,14 @@ package Proxy;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Looper;
 import android.widget.Toast;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
+import Model.Person;
 import Requests.LoginRequest;
 import Results.LoginResult;
 import Results.PersonResult;
@@ -22,6 +25,8 @@ public class PersonTask extends AsyncTask<URL, Integer, PersonResult> {
         this.mContext = mContext;
     }
 
+
+
     @Override
     protected PersonResult doInBackground(URL... urls) {
         DataCache dCache = DataCache.getInstance();
@@ -34,6 +39,8 @@ public class PersonTask extends AsyncTask<URL, Integer, PersonResult> {
             newURL = new URL(url);
             HttpClient httpClient = new HttpClient(newURL);
             persons = httpClient.getPersons();
+            dCache.setAllEvent(httpClient.getEvents().getData());
+            dCache.setAllPersons(persons.getData());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -43,17 +50,14 @@ public class PersonTask extends AsyncTask<URL, Integer, PersonResult> {
     @Override
     protected void onPostExecute(PersonResult result) {
         DataCache dCache = DataCache.getInstance();
+        String personName = dCache.findPerson(dCache.getPersonID());
+        //personID is null, need to get it.
         if(result.isSuccess()) {
-            //Now we need to get the persons first and last name
-            storeData(result);
-            Toast.makeText(mContext, "Welcome " + dCache.getFullUserName() + "!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Welcome " + personName + "!", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void storeData(PersonResult result) {
-
-    }
 }
 //grab all events -
