@@ -33,10 +33,8 @@ public class RegisterTask extends AsyncTask<URL, Integer, RegisterResult> {
     @Override
     protected RegisterResult doInBackground(URL... urls) {
         RegisterResult register;
-
         HttpClient httpClient = new HttpClient();
         register = httpClient.register(rRequest);
-
         return register;
     }
 

@@ -2,6 +2,7 @@ package com.example.familymap;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
@@ -23,10 +24,6 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
         mapFragment = new MapFragment();
-        fragmentManager.beginTransaction()
-                .add(R.id.fragment_container, mapFragment)
-                .commit();
-        //might have to get data brought back/shutdown the login fragment
-        //if the login is successful, then go to map
+        fragmentManager.beginTransaction().replace(R.id.fragment_container, mapFragment);
     }
 }

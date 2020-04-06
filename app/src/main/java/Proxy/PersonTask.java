@@ -25,8 +25,6 @@ public class PersonTask extends AsyncTask<URL, Integer, PersonResult> {
         this.mContext = mContext;
     }
 
-
-
     @Override
     protected PersonResult doInBackground(URL... urls) {
         DataCache dCache = DataCache.getInstance();
@@ -61,10 +59,10 @@ public class PersonTask extends AsyncTask<URL, Integer, PersonResult> {
     @Override
     protected void onPostExecute(PersonResult result) {
         DataCache dCache = DataCache.getInstance();
-        String personName = dCache.findPerson(dCache.getPersonID());
-        //personID is null, need to get it.
+        Person userPerson = dCache.findPerson(dCache.getPersonID());
         if(result.isSuccess()) {
-            Toast.makeText(mContext, "Welcome " + personName + "!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Welcome " + userPerson.getFirstName() + " "
+                            + userPerson.getLastName() + "!", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();
         }

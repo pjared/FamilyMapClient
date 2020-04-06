@@ -124,7 +124,6 @@ public class LoginFragment extends Fragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton rb=(RadioButton) view.findViewById(checkedId);
-                //Toast.makeText(getActivity(), rb.getText(), Toast.LENGTH_SHORT).show();
                 userGender = rb.getText().toString();
                 if(userGender.equals("Male")) {
                     userGender = "m";
@@ -138,14 +137,12 @@ public class LoginFragment extends Fragment {
         registerButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                //String userName, String password, String email, String firstName, String lastName, String gender
                 RegisterTask task = new RegisterTask(userNameEditText.getText().toString(), passWordEditText.getText().toString(),
                                         emailEditText.getText().toString(), firstNameEditText.getText().toString(),
                                         lastNameEditText.getText().toString(), userGender);
                 DataCache dCache = DataCache.getInstance();
                 dCache.setServerHost(serverEditText.getText().toString());
                 dCache.setUserPort(portEditText.getText().toString());
-                //dCache.setFullUserName(firstNameEditText.getText().toString() + " " + lastNameEditText.getText().toString());
                 task.setmContext(getActivity());
                 task.execute();
             }
@@ -158,7 +155,6 @@ public class LoginFragment extends Fragment {
                 DataCache dCache = DataCache.getInstance();
                 dCache.setServerHost(serverEditText.getText().toString());
                 dCache.setUserPort(portEditText.getText().toString());
-                //dCache.setFullUserName(firstNameEditText.getText().toString() + " " +lastNameEditText.getText().toString());
                 LoginTask task = new LoginTask(userNameEditText.getText().toString(), passWordEditText.getText().toString());
                 task.setmContext(getActivity());
                 task.execute();
@@ -172,7 +168,6 @@ public class LoginFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(LOG_TAG, "in onCreate(Bundle)");
         super.onCreate(savedInstanceState);
-
     }
     //login
 }

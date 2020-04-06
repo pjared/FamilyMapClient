@@ -30,14 +30,12 @@ public class LoginTask extends AsyncTask<URL, Integer, LoginResult> {
         DataCache dCache = DataCache.getInstance();
         String url = "http://" + dCache.getServerHost()
                 + ":" + dCache.getUserPort() + "/user/login";
-
         LoginResult login = null;
         URL newURL;
 
         try {
             newURL = new URL(url);
             HttpClient httpClient = new HttpClient(newURL);
-
             login = httpClient.login(lRequest);
         } catch (MalformedURLException e) {
             e.printStackTrace();
