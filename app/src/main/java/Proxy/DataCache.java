@@ -21,8 +21,8 @@ public class DataCache {
     private Set<Person> fatherSideFemales;
     private Set<Person> fatherSideMales;
 
-    ArrayList<Person> allPersons;
-    ArrayList<Event> allEvent;
+    private ArrayList<Person> allPersons;
+    private ArrayList<Event> allEvent;
 
     private String authToken;
 
@@ -30,6 +30,8 @@ public class DataCache {
 
     private String serverHost;
     private String userPort;
+
+    private boolean serverSuccess;
 
     public static DataCache getInstance() {
         //there can only be one instance of datacache at a time
@@ -138,5 +140,13 @@ public class DataCache {
             parseFatherSide(mother.getPersonID());
             parseFatherSide(father.getPersonID());
         }
+    }
+
+    public boolean isServerSuccess() {
+        return serverSuccess;
+    }
+
+    public void setServerSuccess(boolean serverSuccess) {
+        this.serverSuccess = serverSuccess;
     }
 }

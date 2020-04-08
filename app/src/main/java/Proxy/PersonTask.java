@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.os.Looper;
 import android.widget.Toast;
 
+import com.example.familymap.MainActivity;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -18,11 +20,13 @@ public class PersonTask extends AsyncTask<URL, Integer, PersonResult> {
     PersonResult pResult;
 
     private Context mContext;
+    private MainActivity mainActivity;
 
     public PersonTask() {}
 
-    public PersonTask(Context mContext) {
+    public PersonTask(Context mContext, MainActivity mainActivity) {
         this.mContext = mContext;
+        this.mainActivity = mainActivity;
     }
 
     @Override
@@ -63,6 +67,7 @@ public class PersonTask extends AsyncTask<URL, Integer, PersonResult> {
         if(result.isSuccess()) {
             Toast.makeText(mContext, "Welcome " + userPerson.getFirstName() + " "
                             + userPerson.getLastName() + "!", Toast.LENGTH_SHORT).show();
+            mainActivity.switchFragments();
         } else {
             Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();
         }

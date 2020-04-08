@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.example.familymap.MainActivity;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -14,9 +16,11 @@ public class LoginTask extends AsyncTask<URL, Integer, LoginResult> {
     private LoginRequest lRequest;
 
     Context mContext;
+    private MainActivity mainActivity;
 
-    public void setmContext(Context mContext) {
+    public void setmContext(Context mContext, MainActivity mainActivity) {
         this.mContext = mContext;
+        this.mainActivity = mainActivity;
     }
 
     public LoginTask() {}
@@ -49,7 +53,7 @@ public class LoginTask extends AsyncTask<URL, Integer, LoginResult> {
         if(result.isSuccess()) {
             dCache.setAuthToken(result.getAuthToken());
             dCache.setPersonID(result.getPersonID());
-            PersonTask task = new PersonTask(mContext);
+            PersonTask task = new PersonTask(mContext, mainActivity);
             task.execute();
         } else {
             Toast.makeText(mContext, result.getMessage(), Toast.LENGTH_SHORT).show();

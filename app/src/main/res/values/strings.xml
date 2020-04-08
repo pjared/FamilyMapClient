@@ -14,8 +14,10 @@
     <string name="gender">Gender:</string>
     <string name="radio_male">Male</string>
     <string name="radio_female">Female</string>
+    <string name="mapFragmentMessage">This is my map fragment!</string>
 
     <!-- Button Names -->
     <string name="signinButton">SIGN IN</string>
     <string name="registerButton">REGISTER</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

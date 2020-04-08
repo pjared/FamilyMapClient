@@ -37,6 +37,12 @@ public class LoginFragment extends Fragment {
     private RadioGroup gender;
     private String userGender = null;
 
+    private MainActivity mainActivity;
+
+    public LoginFragment(MainActivity mActivity) {
+        mainActivity = mActivity;
+    }
+
     private TextWatcher mTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -139,12 +145,14 @@ public class LoginFragment extends Fragment {
             public void onClick(View v) {
                 RegisterTask task = new RegisterTask(userNameEditText.getText().toString(), passWordEditText.getText().toString(),
                                         emailEditText.getText().toString(), firstNameEditText.getText().toString(),
-                                        lastNameEditText.getText().toString(), userGender);
+                                        lastNameEditText.getText().toString(), userGender, mainActivity);
                 DataCache dCache = DataCache.getInstance();
                 dCache.setServerHost(serverEditText.getText().toString());
                 dCache.setUserPort(portEditText.getText().toString());
                 task.setmContext(getActivity());
                 task.execute();
+
+                //pass in mainActivity, then use it to switch fragments
             }
         });
 
@@ -156,7 +164,7 @@ public class LoginFragment extends Fragment {
                 dCache.setServerHost(serverEditText.getText().toString());
                 dCache.setUserPort(portEditText.getText().toString());
                 LoginTask task = new LoginTask(userNameEditText.getText().toString(), passWordEditText.getText().toString());
-                task.setmContext(getActivity());
+                task.setmContext(getActivity(), mainActivity);
                 task.execute();
             }
         });
