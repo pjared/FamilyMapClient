@@ -1,0 +1,8 @@
+- Need to finish the logout button in settings
+-Make a test case for Event Order test
+-Not sure if I accounted for settings in poly lines - need to make sure it's in display events.
+
+Calculates family relationships (i.e., spouses, parents, children)
+Filters events according to the current filter settings
+Chronologically sorts a person’s individual events (birth first, death last, etc.)
+Correctly searches for people and events

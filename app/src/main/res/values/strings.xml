@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Family Map</string>
 
-
     <!-- Field Names -->
     <string name="serverHost">Server Host:</string>
     <string name="serverPort">Server Port:</string>
@@ -20,4 +19,12 @@
     <string name="signinButton">SIGN IN</string>
     <string name="registerButton">REGISTER</string>
     <string name="title_activity_maps">Map</string>
+
+    <!-- Menu Stuff -->
+    <string name="searchMenu">Search</string>
+    <string name="searchSelectedMessage">You clicked on Search!</string>
+
+    <string name="settingsMenu">Settings</string>
+    <string name="settingsSelectedMessage">You clicked on Settings!</string>
+    <string name="gendericon">GenderIcon</string>
 </resources>
