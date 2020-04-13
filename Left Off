@@ -1,6 +1,9 @@
 - Need to finish the logout button in settings
--Make a test case for Event Order test
--Not sure if I accounted for settings in poly lines - need to make sure it's in display events.
+- Make a test case for Event Order test - Need to account for same year
+
+-Time to start working on person and event activity, and search
+
+
 
 Calculates family relationships (i.e., spouses, parents, children)
 Filters events according to the current filter settings

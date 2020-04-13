@@ -41,65 +41,65 @@ public class SettingsActivity extends AppCompatActivity {
         femaleSwitch.setChecked(dCache.isFemaleSwitch());
 
         lifeStorySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            DataCache dCache1 = DataCache.getInstance();
+            dCache.setSettingsChange(true);
             if(isChecked) {
-                dCache1.setLifeStorySwitch(true);
+                dCache.setLifeStorySwitch(true);
             } else {
-                dCache1.setLifeStorySwitch(false);
+                dCache.setLifeStorySwitch(false);
             }
         });
 
         familyTreeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            DataCache dCache12 = DataCache.getInstance();
+            dCache.setSettingsChange(true);
             if(isChecked) {
-                dCache12.setFamilyTreeSwitch(true);
+                dCache.setFamilyTreeSwitch(true);
             } else {
-                dCache12.setFamilyTreeSwitch(false);
+                dCache.setFamilyTreeSwitch(false);
             }
         });
 
         spouseSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            DataCache dCache13 = DataCache.getInstance();
+            dCache.setSettingsChange(true);
             if(isChecked) {
-                dCache13.setSpouseSwitch(true);
+                dCache.setSpouseSwitch(true);
             } else {
-                dCache13.setSpouseSwitch(false);
+                dCache.setSpouseSwitch(false);
             }
         });
 
         fatherSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            DataCache dCache14 = DataCache.getInstance();
+            dCache.setSettingsChange(true);
             if(isChecked) {
-                dCache14.setFatherSwitch(true);
+                dCache.setFatherSwitch(true);
             } else {
-                dCache14.setFatherSwitch(false);
+                dCache.setFatherSwitch(false);
             }
         });
 
         motherSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            DataCache dCache15 = DataCache.getInstance();
+            dCache.setSettingsChange(true);
             if(isChecked) {
-                dCache15.setMotherSwitch(true);
+                dCache.setMotherSwitch(true);
             } else {
-                dCache15.setMotherSwitch(false);
+                dCache.setMotherSwitch(false);
             }
         });
 
         maleSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            DataCache dCache16 = DataCache.getInstance();
+            dCache.setSettingsChange(true);
             if(isChecked) {
-                dCache16.setMaleSwitch(true);
+                dCache.setMaleSwitch(true);
             } else {
-                dCache16.setMaleSwitch(false);
+                dCache.setMaleSwitch(false);
             }
         });
 
         femaleSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            DataCache dCache17 = DataCache.getInstance();
+            dCache.setSettingsChange(true);
             if(isChecked) {
-                dCache17.setFemaleSwitch(true);
+                dCache.setFemaleSwitch(true);
             } else {
-                dCache17.setFemaleSwitch(false);
+                dCache.setFemaleSwitch(false);
             }
         });
 

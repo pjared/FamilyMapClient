@@ -35,11 +35,18 @@ public class DataCache {
     private boolean spouseSwitch = true;
     private boolean familyTreeSwitch = true;
     private boolean lifeStorySwitch = true;
+    private boolean settingsChange = false;
 
     public ArrayList<Person> getDisplayPeople() {
         ArrayList<Person> displayPeople = new ArrayList<>();
 
-        displayPeople.add(findPerson(personID));
+        String personGender = findPerson(personID).getGender();
+        if(femaleSwitch && personGender.equals("f")) {
+            displayPeople.add(findPerson(personID));
+        }
+        if(maleSwitch && personGender.equals("m")) {
+            displayPeople.add(findPerson(personID));
+        }
         if (motherSwitch) {
             if(femaleSwitch) {
                 displayPeople.addAll(motherSideFemales);
@@ -63,6 +70,15 @@ public class DataCache {
 
         return displayPeople;
     }
+
+    public boolean isSettingsChange() {
+        return settingsChange;
+    }
+
+    public void setSettingsChange(boolean settingsChange) {
+        this.settingsChange = settingsChange;
+    }
+
 
     public boolean isFemaleSwitch() {
         return femaleSwitch;
@@ -120,39 +136,6 @@ public class DataCache {
         this.lifeStorySwitch = lifeStorySwitch;
     }
 
-    //-------------------------This is the login stuff---------------------------------------
-
-    private String authToken;
-    private String personID;
-    private String serverHost;
-    private String userPort;
-    private boolean serverSuccess;
-
-
-    public void setServerHost(String serverHost) {
-        this.serverHost = serverHost;
-    }
-
-    public String getServerHost() {
-        return serverHost;
-    }
-
-    public String getUserPort() {
-        return userPort;
-    }
-
-    public void setUserPort(String userPort) {
-        this.userPort = userPort;
-    }
-
-    public String getAuthToken() {
-        return authToken;
-    }
-
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
-
     //-------------------This is the map stuff------------------------------------------
 
     private Set<Person> motherSideFemales;
@@ -163,6 +146,7 @@ public class DataCache {
     private ArrayList<Person> allPersons;
     private ArrayList<Event> allEvent;
     private Map<String, ArrayList<String>> mappedEvents;
+    private Person activityPerson = null;
 
     public void setAllPersons(ArrayList<Person> allPersons) {
         this.allPersons = allPersons;
@@ -173,11 +157,16 @@ public class DataCache {
         return allPersons;
     }
 
+    ArrayList<Event> displayEvents;
     public ArrayList<Event> getAllEvent(){
-        //allEvent.clear();
-        //return allEvent;
-        ArrayList<Event> displayEvents = new ArrayList<>();
+        displayEvents = new ArrayList<>();
         ArrayList<Person> displayPeople = getDisplayPeople();
+
+        /*for(Event event:allEvent) {
+            if (displayPersonCheck(event.getPersonID())) {
+                displayEvents.add(event);
+            }
+        } */ //This seems to for sure work if other doesn't
 
         for(Person person : displayPeople) {
             ArrayList<String> events = mappedEvents.get(person.getPersonID());
@@ -189,14 +178,31 @@ public class DataCache {
         return displayEvents;
     }
 
+    private boolean displayPersonCheck(String personID) {
+        for(Person person: getDisplayPeople()) {
+            if(personID.equals(person.getPersonID())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean findCurrentEvent(String eventID) {
+        for(Event event:displayEvents) {
+            if (event.getEventID().equals(eventID)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setAllEvent(ArrayList<Event> allEvent) {
         this.allEvent = allEvent;
         mappedEvents = new HashMap<>();
         for (Event event: allEvent) {
             if(!mappedEvents.containsKey(event.getPersonID())) {
-                ArrayList<String> listEvents = new ArrayList<>();
-                listEvents.add(event.getEventID());
-                mappedEvents.put(event.getPersonID(),listEvents);
+                mappedEvents.put(event.getPersonID(),new ArrayList<String>());
+                mappedEvents.get(event.getPersonID()).add(event.getEventID());
             } else {
                 mappedEvents.get(event.getPersonID()).add(event.getEventID());
             }
@@ -305,7 +311,13 @@ public class DataCache {
         this.serverSuccess = serverSuccess;
     }
 
+    public Person getActivityPerson() {
+        return activityPerson;
+    }
 
+    public void setActivityPerson(Person activityPerson) {
+        this.activityPerson = activityPerson;
+    }
 
     //-------------------Sorting for the map---------------------------------------
 
@@ -319,7 +331,7 @@ public class DataCache {
         fatherSideMales.add(findPerson(userPerson.getFatherID()));
         parseFatherSide(userPerson.getFatherID());
         motherSideFemales.add(findPerson(userPerson.getMotherID()));
-        parseMotherSide(userPerson.getFatherID());
+        parseMotherSide(userPerson.getMotherID());
 
 
     }
@@ -332,14 +344,13 @@ public class DataCache {
         Person mother = findPerson(currentPerson.getMotherID());
         Person father = findPerson(currentPerson.getFatherID());
 
-        if(mother != null) {
-            fatherSideFemales.add(mother);
-            parseFatherSide(mother.getPersonID());
-
-        }
         if(father != null) {
             fatherSideMales.add(father);
             parseFatherSide(father.getPersonID());
+        }
+        if(mother != null) {
+            fatherSideFemales.add(mother);
+            parseFatherSide(mother.getPersonID());
         }
     }
 
@@ -357,10 +368,40 @@ public class DataCache {
         }
         if(father != null) {
             motherSideMales.add(father);
-            parseFatherSide(father.getPersonID());
             parseMotherSide(father.getPersonID());
         }
     }
 
-    //-----------------------------------------------------------------------
+    //-------------------------This is the login stuff---------------------------------------
+
+    private String authToken;
+    private String personID;
+    private String serverHost;
+    private String userPort;
+    private boolean serverSuccess;
+
+
+    public void setServerHost(String serverHost) {
+        this.serverHost = serverHost;
+    }
+
+    public String getServerHost() {
+        return serverHost;
+    }
+
+    public String getUserPort() {
+        return userPort;
+    }
+
+    public void setUserPort(String userPort) {
+        this.userPort = userPort;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
 }

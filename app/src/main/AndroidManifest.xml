@@ -38,6 +38,11 @@
         <activity android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity" />
 
+        <activity android:name=".PersonActivity"
+            android:parentActivityName=".MainActivity" />
+
+        <activity android:name=".EventActivity"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

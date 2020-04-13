@@ -3,6 +3,7 @@ package com.example.familymap;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -14,9 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,11 +41,19 @@ import Model.Event;
 import Model.Person;
 import Proxy.DataCache;
 
+//spouse:red
+//LifeStory:blue
+//family:black
+//birth: Blue
+//Death:Orange
+//Marriage:purple
+//else:green
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
     private GoogleMap map;
     private View mapView;
-    ImageView genderImageView;
+    private ImageView genderImageView;
+    private String recentMarker = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +90,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 DataCache dCache = DataCache.getInstance();
                 Event event = dCache.findEvent(marker.getTag().toString());
                 Person associatedPerson = dCache.findPerson(event.getPersonID());
+                recentMarker = (String) marker.getTag();
 
                 String name =  associatedPerson.getFirstName()
                         + " " + associatedPerson.getLastName() + "\n";
@@ -98,172 +110,41 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 TextView tvName = (TextView)mapView.findViewById(R.id.markerName);
                 tvName.setText(name + eventInfo);
 
-                setLines(googleMap, marker);
+                setLines(marker);
+                dCache.setActivityPerson(associatedPerson);
                 return false;
+            }
+        });
+
+        LinearLayout selectedPerson = (LinearLayout) mapView.findViewById(R.id.markerPersonLayout);
+        selectedPerson.setOnClickListener(v -> {
+            DataCache dCache = DataCache.getInstance();
+            if(dCache.getActivityPerson() != null) {
+                Intent intent = new Intent(getActivity(), PersonActivity.class);
+                startActivity(intent);
             }
         });
     }
 
-    private ArrayList<Polyline> polylines = new ArrayList<>();
-    public void setLines(GoogleMap googleMap, Marker marker) {
-
+    @Override
+    public void onResume() {
+        super.onResume();
         DataCache dCache = DataCache.getInstance();
-        ArrayList<Event> allEvent = dCache.getAllEvent();
-
-        if(polylines.size() > 0) {
-            for(Polyline line : polylines)
-            {
-                line.remove();
+        if(dCache.isSettingsChange()) {
+            setMarkers();
+            if(recentMarker != null) {
+                for(Marker marker: markers) {
+                    if(marker.getTag().equals(recentMarker)) {
+                        CameraUpdate update = CameraUpdateFactory.newLatLng(marker.getPosition());
+                        map.animateCamera(update);
+                        setLines(marker);
+                    }
+                }
+                //map.animateCamera(recentMarker);
             }
-            polylines.clear();
+            dCache.setSettingsChange(false);
         }
 
-        if(dCache.isLifeStorySwitch()) {
-            drawLifeStoryLines(googleMap, marker);
-        }
-        if(dCache.isFamilyTreeSwitch()) {
-            drawFamilyTreeLines(googleMap, marker);
-        }
-        if(dCache.isSpouseSwitch()) {
-            drawSpouseLines(googleMap, marker);
-        }
-
-        /*for(Event event: allEvent) {
-            polylines.add(googleMap.addPolyline(new PolylineOptions()
-                    .add(marker.getPosition(), new LatLng(event.getLatitude()
-                            ,event.getLongitude()))));
-        }*/
-    }
-
-    public void drawLifeStoryLines(GoogleMap googleMap, Marker marker) {
-        DataCache dCache = DataCache.getInstance();
-        Event currentEvent = dCache.findEvent(marker.getTag().toString());
-
-        ArrayList<Event> orderedEvents = dCache.getOrderedEvents(currentEvent.getPersonID());
-        for(int i = 0; i < orderedEvents.size() - 1; ++i) {
-            polylines.add(googleMap.addPolyline(new PolylineOptions()
-                    .add(new LatLng(orderedEvents.get(i).getLatitude()
-                            , orderedEvents.get(i).getLongitude())
-                            , new LatLng(orderedEvents.get(i + 1).getLatitude()
-                            , orderedEvents.get(i + 1).getLongitude()))
-                    .color(Color.BLUE)));
-        }
-    }
-
-    private void drawFamilyTreeLines(GoogleMap googleMap, Marker marker) {
-        //recursive loop through father and mother side adding the poly lines along the way
-        DataCache dCache = DataCache.getInstance();
-        Event currentEvent = dCache.findEvent(marker.getTag().toString());
-        Person currentPerson = dCache.findPerson(currentEvent.getPersonID());
-
-        Event parentEvent = dCache.getFirstPersonEvent(currentPerson.getMotherID());
-        if(parentEvent != null) {
-            //need to make sure that the event is in displayEvents.
-            polylines.add(googleMap.addPolyline(new PolylineOptions()
-                    .add(new LatLng(currentEvent.getLatitude()
-                                    , currentEvent.getLongitude())
-                            , new LatLng(parentEvent.getLatitude()
-                                    , parentEvent.getLongitude()))
-                    .width(15)));
-            makeParentLines(parentEvent, currentPerson.getMotherID(), googleMap);
-        }
-        parentEvent = dCache.getFirstPersonEvent(currentPerson.getFatherID());
-        if(parentEvent != null) {
-            polylines.add(googleMap.addPolyline(new PolylineOptions()
-                    .add(new LatLng(currentEvent.getLatitude()
-                                    , currentEvent.getLongitude())
-                            , new LatLng(parentEvent.getLatitude()
-                                    , parentEvent.getLongitude()))
-                    .width(15)));
-            makeParentLines(parentEvent, currentPerson.getFatherID(), googleMap);
-        }
-    }
-
-    private void makeParentLines(Event childEvent, String parentID, GoogleMap googleMap) {
-        DataCache dCache = DataCache.getInstance();
-        Person currentPerson = dCache.findPerson(parentID);
-
-        if(currentPerson.getMotherID() == null) {
-            return;
-        }
-        Event parentEvent = dCache.getFirstPersonEvent(currentPerson.getMotherID());
-        if(parentEvent != null) {
-            polylines.add(googleMap.addPolyline(new PolylineOptions()
-                    .add(new LatLng(childEvent.getLatitude()
-                                    , childEvent.getLongitude())
-                            , new LatLng(parentEvent.getLatitude()
-                                    , parentEvent.getLongitude()))));
-            makeParentLines(parentEvent, currentPerson.getMotherID(), googleMap);
-        }
-
-        if(currentPerson.getFatherID() == null) {
-            return;
-        }
-        parentEvent = dCache.getFirstPersonEvent(currentPerson.getFatherID());
-        if(parentEvent != null) {
-            polylines.add(googleMap.addPolyline(new PolylineOptions()
-                    .add(new LatLng(childEvent.getLatitude()
-                                    , childEvent.getLongitude())
-                            , new LatLng(parentEvent.getLatitude()
-                                    , parentEvent.getLongitude()))));
-            makeParentLines(parentEvent, currentPerson.getFatherID(), googleMap);
-        }
-    }
-
-    private void drawSpouseLines(GoogleMap googleMap, Marker marker) {
-        DataCache dCache = DataCache.getInstance();
-        Event currentEvent = dCache.findEvent(marker.getTag().toString());
-        Person currentPerson = dCache.findPerson(currentEvent.getPersonID());
-        if(currentPerson.getSpouseID() == null) {
-            return;
-        }
-
-        Event firstSpouseEvent = dCache.getFirstSpouseEvent(currentPerson.getSpouseID());
-        polylines.add(googleMap.addPolyline(new PolylineOptions()
-                .add(marker.getPosition(), new LatLng(firstSpouseEvent.getLatitude()
-                        ,firstSpouseEvent.getLongitude()))
-                .color(Color.RED)));
-    }
-
-    private ArrayList<Marker> markers = new ArrayList<>();
-    private void setMarkers() {
-        DataCache dCache = DataCache.getInstance();
-        ArrayList<Event> allEvent = dCache.getAllEvent();
-
-        if(markers.size() > 0) {
-            for(Marker marker : markers)
-            {
-                marker.remove();
-            }
-            markers.clear();
-        }
-
-        for(Event event: allEvent) {
-
-            Marker marker = map.addMarker(new MarkerOptions()
-                    .position(new LatLng(event.getLatitude(), event.getLongitude())));
-            marker.setTag(event.getEventID());
-
-            switch (event.getEventType()) {
-                case "birth":
-                    marker.setIcon(BitmapDescriptorFactory
-                            .defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                    break;
-                case "death":
-                    marker.setIcon(BitmapDescriptorFactory
-                            .defaultMarker(100));
-                    break;
-                case "marriage":
-                    marker.setIcon(BitmapDescriptorFactory
-                            .defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                    break;
-                default:  //unknown event type
-                    marker.setIcon(BitmapDescriptorFactory
-                            .defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                    break;
-            }
-            markers.add(marker);
-        }
     }
 
     @Override
@@ -303,5 +184,142 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         //Settings should use a gridlayout or constraint layout
     }
 
+    private ArrayList<Marker> markers = new ArrayList<>();
+    private void setMarkers() {
+        DataCache dCache = DataCache.getInstance();
+        ArrayList<Event> allEvent = dCache.getAllEvent();
 
+        if(markers.size() > 0) {
+            for(Marker marker : markers)
+            {
+                marker.remove();
+            }
+            markers.clear();
+        }
+
+
+        for(Event event: allEvent) {
+
+            Marker marker = map.addMarker(new MarkerOptions()
+                    .position(new LatLng(event.getLatitude(), event.getLongitude())));
+            marker.setTag(event.getEventID());
+
+            switch (event.getEventType()) {
+                case "birth":
+                    marker.setIcon(BitmapDescriptorFactory
+                            .defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    break;
+                case "death":
+                    marker.setIcon(BitmapDescriptorFactory
+                            .defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                    break;
+                case "marriage":
+                    marker.setIcon(BitmapDescriptorFactory
+                            .defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                    break;
+                default:  //unknown event type
+                    marker.setIcon(BitmapDescriptorFactory
+                            .defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    break;
+            }
+            markers.add(marker);
+        }
+        dCache.getPersonID();
+    }
+
+    private ArrayList<Polyline> polylines = new ArrayList<>();
+    public void setLines(Marker marker) {
+
+        DataCache dCache = DataCache.getInstance();
+        ArrayList<Event> allEvent = dCache.getAllEvent();
+
+        if(polylines.size() > 0) {
+            for(Polyline line : polylines)
+            {
+                line.remove();
+            }
+            polylines.clear();
+        }
+
+        if(dCache.isLifeStorySwitch()) {
+            drawLifeStoryLines(marker);
+        }
+        if(dCache.isFamilyTreeSwitch()) {
+            drawFamilyTreeLines(marker);
+        }
+        if(dCache.isSpouseSwitch()) {
+            drawSpouseLines(marker);
+        }
+    }
+
+    private void drawSpouseLines(Marker marker) {
+        DataCache dCache = DataCache.getInstance();
+        Event currentEvent = dCache.findEvent(marker.getTag().toString());
+        Person currentPerson = dCache.findPerson(currentEvent.getPersonID());
+        if(currentPerson.getSpouseID() == null
+                || dCache.isFemaleSwitch() != dCache.isMaleSwitch()) {
+            return;
+        }
+
+        Event firstSpouseEvent = dCache.getFirstSpouseEvent(currentPerson.getSpouseID());
+
+        polylines.add(map.addPolyline(new PolylineOptions()
+                .add(marker.getPosition(), new LatLng(firstSpouseEvent.getLatitude()
+                        ,firstSpouseEvent.getLongitude()))
+                .color(Color.RED)));
+    }
+
+    private void drawLifeStoryLines(Marker marker) {
+        DataCache dCache = DataCache.getInstance();
+        Event currentEvent = dCache.findEvent(marker.getTag().toString());
+
+        if(!dCache.findCurrentEvent(currentEvent.getEventID())) {
+            return;
+        }
+
+        ArrayList<Event> orderedEvents = dCache.getOrderedEvents(currentEvent.getPersonID());
+        for(int i = 0; i < orderedEvents.size() - 1; ++i) {
+            polylines.add(map.addPolyline(new PolylineOptions()
+                    .add(new LatLng(orderedEvents.get(i).getLatitude()
+                                    , orderedEvents.get(i).getLongitude())
+                            , new LatLng(orderedEvents.get(i + 1).getLatitude()
+                                    , orderedEvents.get(i + 1).getLongitude()))
+                    .color(Color.BLUE)));
+        }
+    }
+
+    private void drawFamilyTreeLines(Marker marker) {
+        //recursive loop through father and mother side adding the poly lines along the way
+        DataCache dCache = DataCache.getInstance();
+        Event currentEvent = dCache.findEvent(marker.getTag().toString());
+        Person currentPerson = dCache.findPerson(currentEvent.getPersonID());
+
+        drawParentSide(currentEvent, currentPerson.getFatherID(), 16);
+        drawParentSide(currentEvent, currentPerson.getMotherID(), 16);
+    }
+
+    private void drawParentSide(Event childEvent, String parentID, int width) {
+        if(parentID == null) {
+            return;
+        }
+        DataCache dCache = DataCache.getInstance();
+        Person currentPerson = dCache.findPerson(childEvent.getPersonID());
+
+        Event parentEvent = dCache.getFirstPersonEvent(parentID);
+        if(parentEvent == null || !dCache.findCurrentEvent(parentEvent.getEventID())) {
+            return;
+        }
+
+        polylines.add(map.addPolyline(new PolylineOptions()
+                .add(new LatLng(childEvent.getLatitude()
+                                , childEvent.getLongitude())
+                        , new LatLng(parentEvent.getLatitude()
+                                , parentEvent.getLongitude()))
+                .width(width)));
+
+        if(width > 4) width -= 4;
+
+        drawParentSide(parentEvent, currentPerson.getFatherID(), width);
+        drawParentSide(parentEvent, currentPerson.getMotherID(), width);
+    }
 }
